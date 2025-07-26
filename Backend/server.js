@@ -1,14 +1,30 @@
-require("dotenv").config()
-const express = require("express")
-const connectedDB = require("./config/db")
-const app = express()
+const dotenv = require("dotenv");
+const express = require("express");
+const connectedDB = require("./config/db");
+const orderRoutes = require("./routes/orderRoutes");
+const productRoutes = require("./routes/productRoutes");
+const userRoutes = require("./routes/userRoutes");
+const { errorHandler } = require('./middleware/errorHandler');
+const cors = require("cors");
 
-app.use(express.json())
+dotenv.config(); 
+const app = express();
 
-const PORT=process.env.PORT
-connectedDB.then(() =>{
-app.listen(() =>{
-    console.log(`Server is Started at ${PORT}`)
-})
-})
-.catch((err) =>console.log(err))
+app.use(cors());
+app.use(express.json());
+app.use('/api/orders', orderRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes); 
+app.get("/healthz", (req, res) => res.send("OK"));
+app.use(errorHandler);
+
+const PORT = process.env.PORT 
+connectedDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running at ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect DB:", err.message);
+  });
