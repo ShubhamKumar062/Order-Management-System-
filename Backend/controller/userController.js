@@ -8,7 +8,7 @@ const generateToken = (user) => {
   });
 };
 
- module.exports.registerUser = async (req, res) => {
+module.exports.registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
   try {
     if (!name || !email || !password) {
